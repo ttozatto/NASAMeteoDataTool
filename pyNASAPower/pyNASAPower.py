@@ -258,7 +258,7 @@ class NASAPowerMeteorologicalData():
         """
 
         # If to_PCSE is True the output excel format is different
-        if self.to_file == True and self.to_PCSE == True:
+        if self.to_PCSE:
             # Convert POWER data to a dataframe.
             df_final = pd.DataFrame({
                 "DAY": df_power.DAY.apply(to_date),
@@ -278,12 +278,8 @@ class NASAPowerMeteorologicalData():
             df_header.iloc[6, 1] = float(df_header.iloc[6, 1])
             # list of dataframesls
             dfs = [df_header, df_final]
-
-            # run function
-            self._write_multiple_dataframes(dfs, 'Data', False, filename)
         
-        elif self.to_file == True and self.to_PCSE == False:
-
+        else:
             df_final = pd.DataFrame({
                 "DAY": df_power.DAY.apply(to_date),
                 "IRRAD": df_power.ALLSKY_SFC_SW_DWN.apply(MJ_to_KJ),
@@ -293,6 +289,8 @@ class NASAPowerMeteorologicalData():
                 "RAIN": df_power.PRECTOTCORR})
             
             dfs = [df_final,]
-            self._write_multiple_dataframes(dfs, 'Data', True, filename)
+
+        # run function
+        self._write_multiple_dataframes(dfs, 'Data', not self.to_PCSE, filename)
 
         return (df_final)
